@@ -38,6 +38,13 @@ def main(page: ft.Page):
     # Tutti i TextField per le info necessarie per aggiungere una nuova automobile (marca, modello, anno, contatore posti)
     # TODO
 
+    input_marca = ft.TextField(label = "marca")
+    input_modello = ft.TextField(label = "modello")
+    input_anno = ft.TextField(label = "anno")
+    input_contatore_posti = ft.TextField(value=str(0), width=50)
+
+
+
     # --- FUNZIONI APP ---
     def aggiorna_lista_auto():
         lista_auto.controls.clear()
@@ -59,6 +66,40 @@ def main(page: ft.Page):
 
     # Handlers per la gestione dei bottoni utili all'inserimento di una nuova auto
     # TODO
+    def incrementaposti(e):
+        input_contatore_posti.value = str(int(input_contatore_posti.value) + 1)
+        page.update()
+    def decrementaposti(e):
+        input_contatore_posti.value = str(int(input_contatore_posti.value) - 1)
+        page.update()
+    def inseriscidati(e):
+        #POTREBBE ESSERE UNA SOLUZIONE MA ANDREBBE GESTITO MEGLIO L'OUTPUT DELL'ERRORE
+        #try:
+        #    autonoleggio.aggiungi_automobile(input_marca.value, input_modello.value, input_anno.value, input_contatore_posti.value)
+        #    aggiorna_lista_auto()
+        #   page.update()
+        #except Exception as e:
+        #    alert.show_alert(f"❌ {e}")
+
+        if input_marca.value.isalpha() and input_modello.value.isalpha() and input_anno.value.isdigit() and input_contatore_posti.value.isdigit() and int(input_contatore_posti.value) > 1:
+            autonoleggio.aggiungi_automobile(input_marca.value, input_modello.value, input_anno.value, input_contatore_posti.value)
+            aggiorna_lista_auto()
+            input_marca.value = ""
+            input_modello.value = ""
+            input_anno.value = ""
+            input_contatore_posti.value = str(0)
+            page.update()
+        else:
+            if not input_marca.value.isalpha():
+                alert.show_alert("Descrizione dell'errore: valore non valido per la marca")
+            elif not input_modello.value.isalpha():
+                alert.show_alert("Descrizione dell'errore: valore non valido per il modello")
+            elif not input_anno.value.isdigit():
+                alert.show_alert("Descrizione dell'errore: valore non valido per l'anno")
+            elif not input_contatore_posti.value.isdigit():
+                alert.show_alert("Descrizione dell'errore: valore non valido per il numero di posti")
+            elif not int(input_contatore_posti.value) > 1:
+                alert.show_alert("Descrizione dell'errore: valore non valido per il numero di posti")
 
     # --- EVENTI ---
     toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=cambia_tema)
@@ -66,6 +107,9 @@ def main(page: ft.Page):
 
     # Bottoni per la gestione dell'inserimento di una nuova auto
     # TODO
+    bottone_aggiunta = ft.ElevatedButton(text="Aggiungi automobile", on_click=inseriscidati)
+    bottone_incrementa_posti = ft.ElevatedButton(text="+", on_click=incrementaposti)
+    bottone_decrementa_posti = ft.ElevatedButton(text="-", on_click=decrementaposti)
 
     # --- LAYOUT ---
     page.add(
@@ -84,6 +128,11 @@ def main(page: ft.Page):
 
         # Sezione 3
         # TODO
+        ft.Text("Aggiungi nuova automobile", size=20),
+        ft.Row(spacing = 20,
+               controls=[input_marca, input_modello, input_anno, bottone_decrementa_posti, input_contatore_posti,bottone_incrementa_posti],
+               alignment = ft.MainAxisAlignment.CENTER),
+        bottone_aggiunta,
 
         # Sezione 4
         ft.Divider(),
